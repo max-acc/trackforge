@@ -1,0 +1,80 @@
+import torch
+from torch_geometric.data import InMemoryDataset, Data
+from torch_geometric.utils import to_undirected
+import numpy as np
+from .synthetic import create_synthetic_event
+
+class SyntheticDataset(InMemoryDataset):
+    def __init__(self, root, num_events=200, transform=None, pre_transform=None):
+        self.num_events = num_events
+        super().__init__(root, transform, pre_transform)
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
+
+    @property
+    def processed_file_names(self):
+        return ['synthetic_data.pt']
+
+    def process(self):
+        data_list = []
+
+        for i in range(self.num_events):
+            if i % 10 == 0:
+                print(f'Generating event {i}/{self.num_events}')
+
+            hits, track_ids = create_synthetic_event(
+                num_tracks= 60 + np.random.randint(-20, 30),
+                hits_per_track= 10 + np.random.randint(-3, 5),
+                noise_hits= 600 + np.random.randint(-200, 400)
+            )
+
+            # build graph -> connect hits, that are close in phi and z
+            edge_index = self.build_graph(hits)
+
+            # edge labels -> 1 if same track, 0 otherwise
+            edge_labels = self.get_edge_labels(edge_index, track_ids)
+
+            # node features
+            x = torch.tensor(hits, dtype=torch.float)
+
+            # all params have to be tensors
+            data = Data(
+                x=x,
+                edge_index=edge_index,
+                y=edge_labels,
+                track_id=torch.tensor(track_ids, dtype=torch.long)
+            )
+            data_list.append(data)
+
+        data, slices = self.collate(data_list)
+        torch.save((data, slices), self.processed_paths[0])
+
+    def build_graph(self, hits, phi_threshold=0.1, z_threshold=20.0):
+        phi = hits[:, 1]
+        z = hits[:, 2]
+
+        # TODO: N^2 good enough for small datasets -> has to be optimized
+        edges = []
+        for i in range(len(hits)):
+            for j in range(i+1, len(hits)):
+                if abs(phi[i] - phi[j]) < phi_threshold and abs(z[i] - z[j]) < z_threshold:
+                    edges.append([i, j])
+
+
+        if len(edges) == 0:
+            edge_index = torch.empty((2,0), dtype=torch.long)
+        else:
+            edge_index = torch.tensor(edges, dtype=torch.long).T
+        return to_undirected(edge_index)
+
+    def get_edge_labels(self, edge_index, track_ids):
+        src, dst = edge_index
+
+        if isinstance(track_ids, np.ndarray):
+            track_ids = torch.tensor(track_ids, dtype=torch.long)
+
+        # compute labels
+        same_track = track_ids[src] == track_ids[dst]
+        not_noise = track_ids[src] != -1
+        labels = (same_track & not_noise).float()
+
+        return torch.tensor(labels, dtype=torch.float32)
