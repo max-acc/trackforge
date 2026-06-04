@@ -24,7 +24,7 @@ class SyntheticDataset(InMemoryDataset):
             hits, track_ids = create_synthetic_event(
                 num_tracks= 60 + np.random.randint(-20, 30),
                 hits_per_track= 10 + np.random.randint(-3, 5),
-                noise_hits= 600 + np.random.randint(-200, 400)
+                noise_hits= 600 + np.random.randint(-200, 200)
             )
 
             # build graph -> connect hits, that are close in phi and z
@@ -56,7 +56,9 @@ class SyntheticDataset(InMemoryDataset):
         edges = []
         for i in range(len(hits)):
             for j in range(i+1, len(hits)):
-                if abs(phi[i] - phi[j]) < phi_threshold and abs(z[i] - z[j]) < z_threshold:
+                delta_phi = abs(phi[i] - phi[j])
+                delta_phi = min(delta_phi, 2 * np.pi * delta_phi)
+                if delta_phi < phi_threshold and abs(z[i] - z[j]) < z_threshold:
                     edges.append([i, j])
 
 
