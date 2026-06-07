@@ -3,7 +3,7 @@ import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
 class SimpleEdgeClassifier(torch.nn.Module):
-    def __init__(self, node_features=3, hidden_dim=42, num_layers=2):
+    def __init__(self, node_features=4, hidden_dim=42, num_layers=2):
         super().__init__()
 
         # simple gcn layers

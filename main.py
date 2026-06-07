@@ -9,14 +9,14 @@ import matplotlib.pyplot as plt
 
 # --- Setup-------------------------------------------------------------------------------------------------------------
 
-dataset = SyntheticDataset(root='data/synthetic', num_events=1000)
+dataset = SyntheticDataset(root='data/synthetic', num_events=100)
 
 train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(len(dataset) * 0.8), int(len(dataset) * 0.2)])
 
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
 
-model = EdgeClassifier(node_features=3, hidden_dim=42, num_layers=42)
+model = EdgeClassifier(node_features=4, hidden_dim=5, num_layers=5)
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # --- Training ---------------------------------------------------------------------------------------------------------
