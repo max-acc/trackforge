@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 # --- Setup-------------------------------------------------------------------------------------------------------------
 
-dataset = SyntheticDataset(root='data/synthetic', num_events=100)
+dataset = SyntheticDataset(root='data/synthetic')
 
 train_dataset, test_dataset = torch.utils.data.random_split(dataset, [int(len(dataset) * 0.8), int(len(dataset) * 0.2)])
 

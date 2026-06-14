@@ -1,12 +1,15 @@
 import torch
+import numpy as np
 from torch_geometric.data import InMemoryDataset, Data
 from torch_geometric.utils import to_undirected
-import numpy as np
+from tqdm import tqdm
+
 from .synthetic import create_synthetic_event
+from .config import Config
 
 class SyntheticDataset(InMemoryDataset):
-    def __init__(self, root, num_events=200, transform=None, pre_transform=None):
-        self.num_events = num_events
+    def __init__(self, root, config_path="./configs/synthetic.yaml", transform=None, pre_transform=None):
+        self.config = Config(config_path)
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
 
@@ -17,14 +20,13 @@ class SyntheticDataset(InMemoryDataset):
     def process(self):
         data_list = []
 
-        for i in range(self.num_events):
-            if i % 10 == 0:
-                print(f'Generating event {i}/{self.num_events}')
+        # initialize event data -> so the config has to be called only once
+        num_events = self.config.get_num_events()
 
-            hits, track_ids = create_synthetic_event(
-                num_tracks= 120 + np.random.randint(-20, 30),
-                noise_hits= 1500 + np.random.randint(-100, 100)
-            )
+        for _ in tqdm(range(num_events), desc="Generating synthetic events",
+                      unit="event", ncols=100):
+
+            hits, track_ids = create_synthetic_event(self.config)
 
             # build graph -> connect hits, that are close in phi and z
             edge_index = self.build_graph(hits)
