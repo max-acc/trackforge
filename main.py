@@ -1,5 +1,5 @@
-from data.dataset import SyntheticDataset
-from models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
+from src.data.dataset import SyntheticDataset
+from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
 import torch
 from torch_geometric.loader import DataLoader
 
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 # --- Setup-------------------------------------------------------------------------------------------------------------
 
 dataset = SyntheticDataset(root='data/synthetic')
-training_config = TrainingConfig("configs/training.yaml")
+training_config = TrainingConfig("configs/training/training.yaml")
 
 train_dataset, test_dataset = torch.utils.data.random_split(
     dataset,
