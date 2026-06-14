@@ -52,7 +52,7 @@ for epoch in range(training_config.get_max_epoch()):
 
     print(f'Epoch {epoch + 1}, Train Loss: {total_train_loss / len(train_loader):.4f}, Test Loss: {total_test_loss / len(test_loader):.4f}')
 
-    if epoch >= 5 and abs(train_losses[-2] - train_losses[-1]) / train_losses[-1] < 3:
+    if epoch >= 5 and abs(train_losses[-2] - train_losses[-1]) / train_losses[-1] < 0.01:
         break
 
 # --- Evaluation -------------------------------------------------------------------------------------------------------

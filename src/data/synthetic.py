@@ -1,5 +1,5 @@
 import numpy as np
-import data_generation.helix as helix_plots
+import docs.diagrams.data_generation.helix as helix_plots
 
 from .config_synthetic_data import SyntheticDataConfig
 
