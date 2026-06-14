@@ -1,5 +1,3 @@
-from matplotlib import pyplot as plt
-
 from data.dataset import SyntheticDataset
 from models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
 import torch
@@ -49,10 +47,13 @@ for epoch in range(epochs):
 
     print(f'Epoch {epoch + 1}, Train Loss: {total_train_loss / len(train_loader):.4f}, Test Loss: {total_test_loss / len(test_loader):.4f}')
 
+    if epoch >= 2 and abs(train_losses[-1] - train_losses[-2]) / train_losses[-1] < 0.01:
+        break
+
 # --- Evaluation -------------------------------------------------------------------------------------------------------
 plt.figure(figsize=(10,6))
-plt.plot(range(1, epochs+1), train_losses, label='Train Loss')
-plt.plot(range(1, epochs+1), test_losses, label='Test Loss')
+plt.plot(range(1, len(train_losses)+1), train_losses, label='Train Loss')
+plt.plot(range(1, len(train_losses)+1), test_losses, label='Test Loss')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
