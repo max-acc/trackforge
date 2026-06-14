@@ -5,11 +5,11 @@ from torch_geometric.utils import to_undirected
 from tqdm import tqdm
 
 from .synthetic import create_synthetic_event
-from .config import Config
+from .config_synthetic_data import SyntheticDataConfig
 
 class SyntheticDataset(InMemoryDataset):
     def __init__(self, root, config_path="./configs/synthetic.yaml", transform=None, pre_transform=None):
-        self.config = Config(config_path)
+        self.config = SyntheticDataConfig(config_path)
         super().__init__(root, transform, pre_transform)
         self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
 

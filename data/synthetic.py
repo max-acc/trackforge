@@ -1,7 +1,7 @@
 import numpy as np
 import diagrams.data_generation.helix as helix_plots
 
-from .config import Config
+from .config_synthetic_data import SyntheticDataConfig
 
 # ----------------------------------------------------------------------------------------------------------------------
 # --- TODO -------------------------------------------------------------------------------------------------------------
@@ -134,4 +134,4 @@ def create_synthetic_event(general_config):
     return hit_features, track_ids
 
 if __name__ == '__main__':
-    create_synthetic_event(Config("../configs/synthetic.yaml"))
+    create_synthetic_event(SyntheticDataConfig("../configs/synthetic.yaml"))

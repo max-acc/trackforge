@@ -1,8 +1,8 @@
-import yaml
-class Config:
+from configs.config import Config
+
+class SyntheticDataConfig(Config):
     def __init__(self, config_path):
-        with open(config_path, 'r') as f:
-            self.config = yaml.safe_load(f)
+        super().__init__(config_path)
 
     def get_num_events(self) -> int:
         """
