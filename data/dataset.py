@@ -22,8 +22,8 @@ class SyntheticDataset(InMemoryDataset):
                 print(f'Generating event {i}/{self.num_events}')
 
             hits, track_ids = create_synthetic_event(
-                num_tracks= 60 + np.random.randint(-20, 30),
-                noise_hits= 200 + np.random.randint(-100, 100)
+                num_tracks= 120 + np.random.randint(-20, 30),
+                noise_hits= 1500 + np.random.randint(-100, 100)
             )
 
             # build graph -> connect hits, that are close in phi and z

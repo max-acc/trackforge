@@ -25,5 +25,6 @@ I do not have formal qualifications in physics (yet). Where assumptions are made
 ### Repository Structure
 Each section of this project is documented in its own README, linked below. The entries here profide a breif orientation; the linked pages contain the full discussion.
 
+---
 ## Structure
 
