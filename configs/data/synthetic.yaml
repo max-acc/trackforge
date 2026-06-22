@@ -2,6 +2,9 @@
 # Configuration data for synthetic data generation.
 # ----------------------------------------------------------------------------------------------------------------------
 
+default:
+  name: "Synthetic Data Generation"
+
 # event data
 event:
   num_events: 200

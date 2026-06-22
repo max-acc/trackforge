@@ -5,7 +5,7 @@ from torch_geometric.utils import to_undirected
 from tqdm import tqdm
 
 from .synthetic import create_synthetic_event
-from .config_synthetic_data import SyntheticDataConfig
+from configs.data.config import SyntheticDataConfig
 
 class SyntheticDataset(InMemoryDataset):
     def __init__(self, root, config_path="./configs/data/synthetic.yaml", transform=None, pre_transform=None):

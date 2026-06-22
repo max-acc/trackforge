@@ -1,27 +1,33 @@
-from src.data.dataset import SyntheticDataset
+from src.data.dataloader import get_dataloaders
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
+from configs.config import BaseConfig
+from configs.training.config import TrainingConfig
+
 import torch
-from torch_geometric.loader import DataLoader
-
-from config_training import TrainingConfig
-
+import numpy as np
 import matplotlib.pyplot as plt
 
+# --- Configs ----------------------------------------------------------------------------------------------------------
+BASE_CONFIG     = "configs/default.yaml"
+TRAINING_CONFIG = "configs/training/training.yaml"
+MODEL_CONFIG    = "configs/model/simple_gnn.yaml"
+
+
+
 # --- Setup-------------------------------------------------------------------------------------------------------------
+#
+base_config = BaseConfig(BASE_CONFIG)
+torch.manual_seed(base_config.get_seed())
+np.random.seed(base_config.get_seed())
 
-dataset = SyntheticDataset(root='data/synthetic')
-training_config = TrainingConfig("configs/training/training.yaml")
+# --- dataset setup
+training_config = TrainingConfig(TRAINING_CONFIG)
 
-train_dataset, test_dataset = torch.utils.data.random_split(
-    dataset,
-    training_config.get_dataset_split(len(dataset))
-)
+train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG)
 
-train_loader    = DataLoader(train_dataset, batch_size=training_config.get_batch_size(), shuffle=True)
-test_loader     = DataLoader(test_dataset, batch_size=training_config.get_batch_size(), shuffle=False)
-
-model = EdgeClassifier(node_features=4, hidden_dim=5, num_layers=5)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+# --- model setup
+model           = EdgeClassifier(MODEL_CONFIG)
+optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
 
 # --- Training ---------------------------------------------------------------------------------------------------------
 train_losses = []

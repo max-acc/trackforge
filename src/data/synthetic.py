@@ -1,8 +1,6 @@
 import numpy as np
 import docs.diagrams.data_generation.helix as helix_plots
 
-from .config_synthetic_data import SyntheticDataConfig
-
 # ----------------------------------------------------------------------------------------------------------------------
 # --- TODO -------------------------------------------------------------------------------------------------------------
 # - Missing hits are common -> currently this is not modeled
@@ -132,6 +130,3 @@ def create_synthetic_event(general_config):
     hit_features = np.stack([r, np.cos(phi), np.sin(phi), z], axis=1)
 
     return hit_features, track_ids
-
-if __name__ == '__main__':
-    create_synthetic_event(SyntheticDataConfig("../../configs/data/synthetic.yaml"))

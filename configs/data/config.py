@@ -1,7 +1,12 @@
 from configs.config import Config
 
+from typing import Dict, Any
+
 class SyntheticDataConfig(Config):
-    def __init__(self, config_path):
+    """
+    Configuration for synthetic data generation in particle track reconstruction.
+    """
+    def __init__(self, config_path: str):
         super().__init__(config_path)
 
     def get_num_events(self) -> int:
@@ -12,7 +17,12 @@ class SyntheticDataConfig(Config):
         """
         return self.config['event']['num_events']
 
-    def get_event_config(self):
+    def get_event_config(self) -> Dict[str, Any]:
+        """
+        Return configuration parameters for individual events.
+
+        :return:    Dictionairy containing the configuration parameters for individual events.
+        """
         return {
             'num_tracks':       self.config['event']['num_tracks'],
             'num_tracks_dev':   self.config['event']['num_tracks_dev'],
@@ -20,7 +30,12 @@ class SyntheticDataConfig(Config):
             'noise_hits_dev':   self.config['event']['noise_hits_dev'],
         }
 
-    def get_helix_config(self):
+    def get_helix_config(self)-> Dict[str, Any]:
+        """
+        Return helix/track generation parameters.
+
+        :return:    Dictionary with helix geometry and noise settings.
+        """
         return {
             'z_positions':      self.config['detector']['z_positions'],
             'radius':           self.config['track']['radius_mean'],
@@ -30,9 +45,9 @@ class SyntheticDataConfig(Config):
             'min_radius':       self.config['helix']['min_radius'],
         }
 
-    def get_noise_config(self) -> dict:
+    def get_noise_config(self)-> Dict[str, Any]:
         """
-        Getter for returning noise specifig configuartion data.
+        Return detector and noise configuration.
 
         :return:    A dictionairy containing the `z_positions` of the detector, and the `disk_r_range` of the detector.
         """

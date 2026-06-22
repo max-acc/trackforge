@@ -2,9 +2,18 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
+from configs.model import config
+from configs.model.config import ModelConfig
+
+
 class SimpleEdgeClassifier(torch.nn.Module):
-    def __init__(self, node_features=4, hidden_dim=42, num_layers=2):
+    def __init__(self, config_path):
         super().__init__()
+
+        config = ModelConfig(config_path)
+        node_features   = config.get_node_features()
+        hidden_dim      = config.get_hidden_dim()
+        num_layers      = config.get_num_layers()
 
         # simple gcn layers
         self.convs = torch.nn.ModuleList()
