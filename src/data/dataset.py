@@ -58,7 +58,7 @@ class SyntheticDataset(InMemoryDataset):
         for i in range(len(hits)):
             for j in range(i+1, len(hits)):
                 delta_phi = abs(phi[i] - phi[j])
-                delta_phi = min(delta_phi, 2 * np.pi * delta_phi)
+                delta_phi = min(delta_phi, 2 * np.pi - delta_phi)
                 if delta_phi < phi_threshold and abs(z[i] - z[j]) < z_threshold:
                     edges.append([i, j])
 
