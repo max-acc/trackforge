@@ -26,6 +26,7 @@ class SimpleEdgeClassifier(torch.nn.Module):
         self.edge_predictor = torch.nn.Sequential(
             torch.nn.Linear(hidden_dim * 2, hidden_dim),
             torch.nn.ReLU(),
+            torch.nn.Dropout(0.1),
             torch.nn.Linear(hidden_dim, 1),
         )
 

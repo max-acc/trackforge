@@ -43,6 +43,14 @@ class TrainingConfig(Config):
         """
         return int(self.config['training']['max_epochs'])
 
+    def get_min_epoch(self) -> int:
+        """
+        Return the minimum number of training epochs.
+
+        :return:    Minimum epochs to train for.
+        """
+        return int(self.config['training']['min_epochs'])
+
     def get_learning_rate(self) -> float:
         """
         Return the learning rate for the optimizer.
