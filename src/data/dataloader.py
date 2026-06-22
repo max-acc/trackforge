@@ -53,3 +53,26 @@ def get_dataloaders(config_path, root="src/data/synthetic"):
     print(f"Dataset split: {len(train_dataset)} train | {len(val_dataset)} val | {len(test_dataset)} test")
 
     return train_loader, val_loader, test_loader
+
+def compute_pos_weight(dataset):
+    """
+    Computes the positive weight by sampling the dataset.
+
+    :param dataset:     The dataset.
+    :return:    The ratio between negative and positive edges
+    """
+    total_pos = 0
+    total_neg = 0
+
+    for data in dataset:
+
+        pos = (data.y > 0.5).sum().item()
+        neg = (data.y < 0.5).sum().item()
+
+        total_pos += pos
+        total_neg += neg
+
+    if total_pos == 0:
+        return torch.tensor(1.0)
+
+    return torch.tensor(total_neg / total_pos, dtype=torch.float32)
