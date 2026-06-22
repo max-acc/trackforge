@@ -39,7 +39,7 @@ class SimpleEdgeClassifier(torch.nn.Module):
         # get embeddings for source and destination
         src, dst = edge_index
         edge_features = torch.cat([
-            x[src], x[dst],
+            x[src] + x[dst],
             (x[src] - x[dst]).abs()
         ], dim=1)
 
