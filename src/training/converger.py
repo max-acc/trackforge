@@ -48,6 +48,8 @@ def get_converger(converger_name: str, min_epoch=0) -> Converger:
     :return:    The concrete Converger instance.
     """
     match converger_name:
+        case "SMA":
+            return SimpleMovingAverageConverger(min_epoch)
         case "RelLoss":
             return RelativeLossConverger(min_epoch)
         case _:
