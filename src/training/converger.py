@@ -36,8 +36,9 @@ class Converger():
         return epoch >= self.min_epoch
 
 # imports have to be at this location, otherwise my IDE marks this as circular dependency
-from src.training.convergers.sma import SimpleMovingAverageConverger
 from src.training.convergers.rel_loss import RelativeLossConverger
+from src.training.convergers.sma import SimpleMovingAverageConverger
+from src.training.convergers.ema import ExponentialMovingAverageConverger
 
 def get_converger(converger_name: str, min_epoch=0) -> Converger:
     """
@@ -48,9 +49,11 @@ def get_converger(converger_name: str, min_epoch=0) -> Converger:
     :return:    The concrete Converger instance.
     """
     match converger_name:
-        case "SMA":
-            return SimpleMovingAverageConverger(min_epoch)
         case "RelLoss":
             return RelativeLossConverger(min_epoch)
+        case "SMA":
+            return SimpleMovingAverageConverger(min_epoch)
+        case "EMA":
+            return ExponentialMovingAverageConverger(min_epoch)
         case _:
             return Converger(min_epoch)
