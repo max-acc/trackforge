@@ -1,4 +1,6 @@
-from src.data.dataloader import get_dataloaders
+from datetime import datetime
+
+from src.data.dataloader import get_dataloaders, compute_pos_weight
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
 from configs.config import BaseConfig
 from configs.training.config import TrainingConfig
@@ -12,61 +14,73 @@ BASE_CONFIG     = "configs/default.yaml"
 TRAINING_CONFIG = "configs/training/training.yaml"
 MODEL_CONFIG    = "configs/model/simple_gnn.yaml"
 
-
-
 # --- Setup-------------------------------------------------------------------------------------------------------------
 #
 base_config = BaseConfig(BASE_CONFIG)
-torch.manual_seed(base_config.get_seed())
-np.random.seed(base_config.get_seed())
 
-# --- dataset setup
-training_config = TrainingConfig(TRAINING_CONFIG)
+np.random.seed(42)
 
-train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG)
+for _ in range(10):
+    seed = np.random.randint(0, 100000)
 
-# --- model setup
-model           = EdgeClassifier(MODEL_CONFIG)
-optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
+    torch.manual_seed(seed)#base_config.get_seed())
+    np.random.seed(seed)#base_config.get_seed())
 
-# --- Training ---------------------------------------------------------------------------------------------------------
-train_losses = []
-test_losses = []
+    # --- dataset setup
+    training_config = TrainingConfig(TRAINING_CONFIG)
 
-for epoch in range(training_config.get_max_epoch()):
-    model.train()
-    total_train_loss = 0
-    for batch in train_loader:
-        optimizer.zero_grad()
-        out = model(batch)
-        loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
-        loss.backward()
-        optimizer.step()
-        total_train_loss += loss.item()
+    train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG)
 
-    train_losses.append(total_train_loss / len(train_loader))
+    # --- model setup
+    model           = EdgeClassifier(MODEL_CONFIG)
+    optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
 
-    model.eval()
-    total_test_loss = 0
-    with torch.no_grad():
-        for batch in test_loader:
+    # --- Training ---------------------------------------------------------------------------------------------------------
+    train_losses = []
+    test_losses = []
+
+    pos_weight = compute_pos_weight(train_loader.dataset)
+    pos_weight_test = compute_pos_weight(test_loader.dataset)
+    criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    criterion_test = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight_test)
+
+    for epoch in range(training_config.get_max_epoch()):
+        model.train()
+        total_train_loss = 0
+        for batch in train_loader:
+            optimizer.zero_grad()
             out = model(batch)
-            loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
-            total_test_loss += loss.item()
+            # loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
+            loss = criterion(out, batch.y.float())
+            loss.backward()
+            optimizer.step()
+            total_train_loss += loss.item()
 
-    test_losses.append(total_test_loss / len(test_loader))
+        train_losses.append(total_train_loss / len(train_loader))
 
-    print(f'Epoch {epoch + 1}, Train Loss: {total_train_loss / len(train_loader):.4f}, Test Loss: {total_test_loss / len(test_loader):.4f}')
+        model.eval()
+        total_test_loss = 0
+        with torch.no_grad():
+            for batch in test_loader:
+                out = model(batch)
+                # loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
+                loss = criterion_test(out, batch.y.float())
+                total_test_loss += loss.item()
 
-    if epoch >= 5 and abs(train_losses[-2] - train_losses[-1]) / train_losses[-1] < 0.01:
-        break
+        test_losses.append(total_test_loss / len(test_loader))
 
-# --- Evaluation -------------------------------------------------------------------------------------------------------
-plt.figure(figsize=(10,6))
-plt.plot(range(1, len(train_losses)+1), train_losses, label='Train Loss')
-plt.plot(range(1, len(train_losses)+1), test_losses, label='Test Loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
+        print(f'Epoch {epoch + 1}, Train Loss: {total_train_loss / len(train_loader):.4f}, Test Loss: {total_test_loss / len(test_loader):.4f}')
 
-plt.show()
+        if epoch >= training_config.get_min_epoch() and abs(train_losses[-2] - train_losses[-1]) / train_losses[-1] < 0.01:
+            break
+
+    # --- Evaluation -------------------------------------------------------------------------------------------------------
+    plt.figure(figsize=(10,6))
+    plt.plot(range(1, len(train_losses)+1), train_losses, label='Train Loss')
+    plt.plot(range(1, len(train_losses)+1), test_losses, label='Test Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    plt.savefig(f"{datetime.now()}.png", dpi=300, bbox_inches='tight')
+    #plt.show()
