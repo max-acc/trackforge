@@ -58,3 +58,11 @@ class TrainingConfig(Config):
         :return:    Learning rate value.
         """
         return float(self.config['training']['learning_rate'])
+
+    def get_converger(self):
+        """
+        Return the converger for training stop condition.
+
+        :return:    The name of the stop condition.
+        """
+        return self.config['training']['converger']

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from src.data.dataloader import get_dataloaders, compute_pos_weight
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
+from src.training.converger import get_converger
 from configs.config import BaseConfig
 from configs.training.config import TrainingConfig
 
@@ -34,6 +35,7 @@ for _ in range(10):
     # --- model setup
     model           = EdgeClassifier(MODEL_CONFIG)
     optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
+    converger       = get_converger(training_config.get_converger())
 
     # --- Training ---------------------------------------------------------------------------------------------------------
     train_losses = []
@@ -56,7 +58,7 @@ for _ in range(10):
             optimizer.step()
             total_train_loss += loss.item()
 
-        train_losses.append(total_train_loss / len(train_loader))
+        converger.append_train_loss(total_train_loss / len(train_loader))
 
         model.eval()
         total_test_loss = 0
@@ -67,17 +69,17 @@ for _ in range(10):
                 loss = criterion_test(out, batch.y.float())
                 total_test_loss += loss.item()
 
-        test_losses.append(total_test_loss / len(test_loader))
+        converger.append_test_loss(total_test_loss / len(test_loader))
 
-        print(f'Epoch {epoch + 1}, Train Loss: {total_train_loss / len(train_loader):.4f}, Test Loss: {total_test_loss / len(test_loader):.4f}')
+        print(f'Epoch {epoch + 1}, Train Loss: {converger.train_losses[-1]:.4f}, Test Loss: {converger.test_losses[-1]:.4f}')
 
-        if epoch >= training_config.get_min_epoch() and abs(train_losses[-2] - train_losses[-1]) / train_losses[-1] < 0.01:
+        if converger.has_converged(epoch):
             break
 
     # --- Evaluation -------------------------------------------------------------------------------------------------------
     plt.figure(figsize=(10,6))
-    plt.plot(range(1, len(train_losses)+1), train_losses, label='Train Loss')
-    plt.plot(range(1, len(train_losses)+1), test_losses, label='Test Loss')
+    plt.plot(range(1, len(converger.train_losses)+1), converger.train_losses, label='Train Loss')
+    plt.plot(range(1, len(converger.train_losses)+1), converger.test_losses, label='Test Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
