@@ -30,7 +30,7 @@ for _ in range(10):
     # --- dataset setup
     training_config = TrainingConfig(TRAINING_CONFIG)
 
-    train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG)
+    train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG, seed)
 
     # --- model setup
     model           = EdgeClassifier(MODEL_CONFIG)

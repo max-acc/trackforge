@@ -5,7 +5,7 @@ import torch
 from torch.utils.data import random_split
 from torch_geometric.loader import DataLoader
 
-def get_dataloaders(config_path, root="src/data/synthetic"):
+def get_dataloaders(config_path, seed, root="src/data/synthetic"):
     """
     Creates train/val/test dataloaders from the synthetic dataset
 
@@ -28,7 +28,7 @@ def get_dataloaders(config_path, root="src/data/synthetic"):
     train_dataset, val_dataset, test_dataset = random_split(
         full_dataset,
         [train_size, val_size, test_size],
-        generator=torch.Generator()
+        generator=torch.Generator().manual_seed(seed)
     )
 
     # create dataloaders
