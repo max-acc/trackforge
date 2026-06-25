@@ -1,6 +1,9 @@
 import torch
 
-def evaluate(model, loader, threshold=0.5):
+from src.evaluation.metric_dc import Metric
+
+
+def evaluate(model, loader, threshold=0.5) -> Metric:
     model.eval()
     all_scores, all_labels = [], []
 
@@ -26,7 +29,4 @@ def evaluate(model, loader, threshold=0.5):
     recall = tp / (tp + fn)
     precision = tp / (tp + fp)
 
-    return {
-        "recall": recall,
-        "precision": precision,
-    }
+    return Metric(recall, precision)

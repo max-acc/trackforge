@@ -1,15 +1,17 @@
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
 from datetime import datetime
+from typing import List
 
 from src.data.dataloader import get_dataloaders, compute_pos_weight
+from src.evaluation.metric_dc import Metric
 from src.evaluation.metrics import evaluate
+from src.evaluation.plots import plot_evaluations
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
 from src.training.converger import get_converger
 from configs.config import BaseConfig
 from configs.training.config import TrainingConfig
-
-import torch
-import numpy as np
-import matplotlib.pyplot as plt
 
 # --- Configs ----------------------------------------------------------------------------------------------------------
 BASE_CONFIG     = "configs/default.yaml"
@@ -36,11 +38,12 @@ for _ in range(1):
     # --- model setup
     model           = EdgeClassifier(MODEL_CONFIG)
     optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
-    converger       = get_converger(training_config.get_converger())
+    converger       = get_converger(training_config.get_converger(), training_config.get_min_epoch())
 
     # --- Training ---------------------------------------------------------------------------------------------------------
     train_losses = []
     test_losses = []
+    metrics:List[Metric] = []
 
     pos_weight = compute_pos_weight(train_loader.dataset)
     pos_weight_test = compute_pos_weight(test_loader.dataset)
@@ -70,7 +73,7 @@ for _ in range(1):
                 loss = criterion_test(out, batch.y.float())
                 total_test_loss += loss.item()
 
-        print(evaluate(model, test_loader))
+        metrics.append(evaluate(model, test_loader))
 
         converger.append_test_loss(total_test_loss / len(test_loader))
 
@@ -79,7 +82,9 @@ for _ in range(1):
         if converger.has_converged(epoch):
             break
 
-    # --- Evaluation -------------------------------------------------------------------------------------------------------
+    # --- Evaluation ---------------------------------------------------------------------------------------------------
+
+    plot_evaluations(converger.train_losses, converger.test_losses, metrics)
     plt.figure(figsize=(10,6))
     plt.plot(range(1, len(converger.train_losses)+1), converger.train_losses, label='Train Loss')
     plt.plot(range(1, len(converger.train_losses)+1), converger.test_losses, label='Test Loss')
