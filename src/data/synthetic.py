@@ -1,5 +1,4 @@
 import numpy as np
-import docs.diagrams.data_generation.helix as helix_plots
 
 # ----------------------------------------------------------------------------------------------------------------------
 # --- TODO -------------------------------------------------------------------------------------------------------------
@@ -68,6 +67,7 @@ def generate_helix_track(
     y = helix_center_y + radius * np.sin(phi)
 
     if plot:
+        import docs.diagrams.data_generation.helix as helix_plots
         helix_plots.plot_rphi_plane(x, y, config['z_positions'], helix_center_x, helix_center_y)
         helix_plots.plot_track(x, y, z, config['z_positions'], helix_center_x, helix_center_y)
 
