@@ -115,7 +115,7 @@ def create_synthetic_event(general_config):
         track_ids.extend([track_id] * len(hits))
 
     # --- noise hits on actual disk surface ---
-    noise_hits = config['noise_hits'] + np.random.randint(config['noise_hits_dev'][0], config['noise_hits_dev'][1])
+    noise_hits = config['noise_hits'] + abs(np.random.randint(config['noise_hits_dev'][0], config['noise_hits_dev'][1]))
 
     all_hits.append(generate_noise_hits(noise_hits, general_config))
     track_ids.extend([-1] * noise_hits)
