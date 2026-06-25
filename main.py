@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from src.data.dataloader import get_dataloaders, compute_pos_weight
+from src.evaluation.metrics import evaluate
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
 from src.training.converger import get_converger
 from configs.config import BaseConfig
@@ -21,7 +22,7 @@ base_config = BaseConfig(BASE_CONFIG)
 
 np.random.seed(42)
 
-for _ in range(10):
+for _ in range(1):
     seed = np.random.randint(0, 100000)
 
     torch.manual_seed(seed)#base_config.get_seed())
@@ -68,6 +69,8 @@ for _ in range(10):
                 # loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
                 loss = criterion_test(out, batch.y.float())
                 total_test_loss += loss.item()
+
+        print(evaluate(model, test_loader))
 
         converger.append_test_loss(total_test_loss / len(test_loader))
 
