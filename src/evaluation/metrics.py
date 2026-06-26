@@ -27,6 +27,6 @@ def evaluate(model, loader, threshold=0.5) -> Metric:
     print([tp, fp, fn, tn])
 
     recall = tp / (tp + fn)
-    precision = tp / (tp + fp)
+    precision = tp / (tp + fp) if tp + fp > 0 else 0
 
     return Metric(recall, precision)
