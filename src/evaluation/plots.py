@@ -13,12 +13,13 @@ def plot_evaluations(train_losses: List[float],
 
     # --- plot recall and precision
     plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(metrics) + 1), [metric.accuracy for metric in metrics], label='Accuracy')
     plt.plot(range(1, len(metrics) + 1), [metric.recall for metric in metrics], label='Recall')
     plt.plot(range(1, len(metrics) + 1), [metric.precision for metric in metrics], label='Precision')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.savefig("outputs/" + file_name + "rp.png", dpi=300, bbox_inches='tight')
+    plt.savefig("outputs/" + file_name + "arp.png", dpi=300, bbox_inches='tight')
 
     # --- plot loss
     plt.figure(figsize=(10, 6))
