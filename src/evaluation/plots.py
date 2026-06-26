@@ -24,6 +24,7 @@ def plot_evaluations(train_losses: List[float],
     plt.figure(figsize=(10, 6))
     plt.plot(range(1, len(train_losses) + 1), train_losses, label='Train Loss')
     plt.plot(range(1, len(train_losses) + 1), test_losses, label='Test Loss')
+    plt.yscale('log')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
