@@ -3,7 +3,7 @@ import torch
 from src.evaluation.metric_dc import Metric
 
 
-def evaluate(model, loader, threshold=0.5) -> Metric:
+def evaluate(model, loader, threshold=0.7) -> Metric:
     model.eval()
     all_scores, all_labels = [], []
 
@@ -23,8 +23,6 @@ def evaluate(model, loader, threshold=0.5) -> Metric:
     fp = ((preds == 1) & (labels == 0)).sum()
     fn = ((preds == 0) & (labels == 1)).sum()
     tn = ((preds == 0) & (labels == 0)).sum()
-
-    print([tp, fp, fn, tn])
 
     accuracy = (tp + tn) / (tp + tn + fp + fn)
     recall = tp / (tp + fn)
