@@ -7,10 +7,10 @@ default:
 
 # event data
 event:
-  num_events:     200
-  num_tracks:     80
-  num_tracks_dev: [-20, 30]
-  noise_hits:     10
+  num_events:     500
+  num_tracks:     20
+  num_tracks_dev: [-0.1, 0.1]
+  noise_hits:     5
   noise_hits_dev: [-1, 1]
 
 # detector geometry
@@ -22,9 +22,9 @@ detector:
 track:
   radius_mean: 50.0
   radius_std: 28.0
-  noise_sd: [1.2, 1.2]  # noise standard deviation in x and y direction
+  noise_sd: [0.1, 0.1]  # noise standard deviation in x and y direction
 
 # helix geometry
 helix:
-  scale: 10.0     # control curvature strength, e.g. magnetic field
+  scale: 0.5     # control curvature strength, e.g. magnetic field
   min_radius: 5.0

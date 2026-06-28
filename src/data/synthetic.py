@@ -106,7 +106,7 @@ def create_synthetic_event(general_config):
 
     # --- generate real tracks ---
     for track_id in range(
-            config['num_tracks'] + np.random.randint(config['num_tracks_dev'][0], config['num_tracks_dev'][1])
+            config['num_tracks'] # TODO revert + np.random.randint(config['num_tracks_dev'][0], config['num_tracks_dev'][1])
     ):
         hits = None
         while hits is None: # retry on near perpendicular track
@@ -115,7 +115,7 @@ def create_synthetic_event(general_config):
         track_ids.extend([track_id] * len(hits))
 
     # --- noise hits on actual disk surface ---
-    noise_hits = config['noise_hits'] + abs(np.random.randint(config['noise_hits_dev'][0], config['noise_hits_dev'][1]))
+    noise_hits = config['noise_hits'] # TODO revert + abs(np.random.randint(config['noise_hits_dev'][0], config['noise_hits_dev'][1]))
 
     all_hits.append(generate_noise_hits(noise_hits, general_config))
     track_ids.extend([-1] * noise_hits)
