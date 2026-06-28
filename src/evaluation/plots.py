@@ -3,19 +3,19 @@ from typing import List
 
 import matplotlib.pyplot as plt
 
-from src.evaluation.metric_dc import Metric
+from src.evaluation.metric_dc import MetricList
 
 
 def plot_evaluations(train_losses: List[float],
                      test_losses: List[float],
-                     metrics: List[Metric]):
+                     metrics: MetricList):
     file_name = f'{datetime.now()}_'
 
     # --- plot accuracy, recall and precision
     plt.figure(figsize=(10, 6))
-    plt.plot(range(1, len(metrics) + 1), [metric.accuracy for metric in metrics], label='Accuracy')
-    plt.plot(range(1, len(metrics) + 1), [metric.recall for metric in metrics], label='Recall')
-    plt.plot(range(1, len(metrics) + 1), [metric.precision for metric in metrics], label='Precision')
+    plt.plot(range(1, len(metrics) + 1), metrics.get_accuracy, label='Accuracy')
+    plt.plot(range(1, len(metrics) + 1), metrics.get_recall, label='Recall')
+    plt.plot(range(1, len(metrics) + 1), metrics.get_precision, label='Precision')
     plt.xlabel('Epochs')
     plt.ylabel('Percentage')
     plt.ylim(0,1)

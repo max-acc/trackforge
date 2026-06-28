@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import List
 
 from src.data.dataloader import get_dataloaders, compute_pos_weight
-from src.evaluation.metric_dc import Metric
+from src.evaluation.metric_dc import MetricList
 from src.evaluation.metrics import evaluate
 from src.evaluation.plots import plot_evaluations
 from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
@@ -43,7 +43,7 @@ for _ in range(1):
     # --- Training ---------------------------------------------------------------------------------------------------------
     train_losses = []
     test_losses = []
-    metrics:List[Metric] = []
+    metrics: MetricList = MetricList()
 
     pos_weight = compute_pos_weight(train_loader.dataset)
     pos_weight_test = compute_pos_weight(test_loader.dataset)
