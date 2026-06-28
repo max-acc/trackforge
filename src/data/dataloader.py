@@ -54,7 +54,7 @@ def get_dataloaders(config_path, seed, root="src/data/synthetic"):
 
     return train_loader, val_loader, test_loader
 
-def compute_pos_weight(dataset):
+def compute_pos_weight(dataset, threshold=0.5):
     """
     Computes the positive weight by sampling the dataset.
 
@@ -66,8 +66,8 @@ def compute_pos_weight(dataset):
 
     for data in dataset:
 
-        pos = (data.y > 0.5).sum().item()
-        neg = (data.y < 0.5).sum().item()
+        pos = (data.y > threshold).sum().item()
+        neg = (data.y < threshold).sum().item()
 
         total_pos += pos
         total_neg += neg
