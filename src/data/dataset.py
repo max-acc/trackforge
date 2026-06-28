@@ -37,6 +37,10 @@ class SyntheticDataset(InMemoryDataset):
             # node features
             x = torch.tensor(hits, dtype=torch.float)
 
+            mean = x.mean(dim=0, keepdim=True)
+            std = x.std(dim=0, keepdim=True) + 1e-8
+            x = (x - mean) / std
+
             # all params have to be tensors
             data = Data(
                 x=x,
@@ -49,24 +53,45 @@ class SyntheticDataset(InMemoryDataset):
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
 
-    def build_graph(self, hits, phi_threshold=0.1, z_threshold=20.0):
-        phi = hits[:, 1]
-        z = hits[:, 2]
+    def build_graph(self, hits, phi_threshold=1):
+        cos_phi = hits[:, 1]
+        sin_phi = hits[:, 2]
+        z = hits[:, 3]
 
-        # TODO: N^2 good enough for small datasets -> has to be optimized
-        edges = []
-        for i in range(len(hits)):
-            for j in range(i+1, len(hits)):
-                delta_phi = abs(phi[i] - phi[j])
-                delta_phi = min(delta_phi, 2 * np.pi - delta_phi)
-                if delta_phi < phi_threshold and abs(z[i] - z[j]) < z_threshold:
-                    edges.append([i, j])
+        phi = np.arctan2(sin_phi, cos_phi)
 
+        z_positions = np.array(self.config.get_noise_config()['z_positions'])
+        layer = np.argmin(np.abs(z[:, None] - z_positions[None, :]), axis=1)
 
-        if len(edges) == 0:
-            edge_index = torch.empty((2,0), dtype=torch.long)
-        else:
-            edge_index = torch.tensor(edges, dtype=torch.long).T
+        num_layers = len(z_positions)
+        all_edges: list = []
+
+        for k in range(num_layers - 1):
+            idx_k = np.where(layer == k)[0]
+            idx_k1 = np.where(layer == k + 1)[0]
+
+            if len(idx_k) == 0 or len(idx_k1) == 0:
+                continue
+
+            d_phi = np.abs(phi[idx_k][:, None] - phi[idx_k1][None, :])
+            d_phi = np.minimum(d_phi, 2 * np.pi - d_phi)
+
+            row_i, col_j = np.where(d_phi < phi_threshold)
+
+            if len(row_i) == 0:
+                continue
+
+            src = idx_k[row_i]
+            dst = idx_k1[col_j]
+
+            all_edges.append(np.stack([src, dst], axis=1))
+
+        if not all_edges:
+            return torch.empty((2, 0), dtype=torch.long)
+
+        edges = np.vstack(all_edges)
+        edge_index = torch.tensor(edges.T, dtype=torch.long)
+
         return to_undirected(edge_index)
 
     def get_edge_labels(self, edge_index, track_ids):
