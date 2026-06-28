@@ -35,6 +35,7 @@ for _ in range(1):
     # --- model setup
     model           = EdgeClassifier(MODEL_CONFIG)
     optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
+    scheduler       = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
     converger       = get_converger(training_config.get_converger(), training_config.get_min_epoch())
 
     # --- Training ---------------------------------------------------------------------------------------------------------
@@ -69,6 +70,8 @@ for _ in range(1):
         metrics.append(evaluate(model, test_loader))
 
         converger.append_test_loss(total_test_loss / len(test_loader))
+
+        scheduler.step(total_test_loss / len(test_loader))
 
         print(f'Epoch {epoch + 1}, Train Loss: {converger.train_losses[-1]:.4f}, Test Loss: {converger.test_losses[-1]:.4f}')
 
