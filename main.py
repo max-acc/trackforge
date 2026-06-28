@@ -1,8 +1,5 @@
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
-from datetime import datetime
-from typing import List
 
 from src.data.dataloader import get_dataloaders, compute_pos_weight
 from src.evaluation.metric_dc import MetricList
@@ -27,8 +24,8 @@ np.random.seed(42)
 for _ in range(1):
     seed = np.random.randint(0, 100000)
 
-    torch.manual_seed(seed)#base_config.get_seed())
-    np.random.seed(seed)#base_config.get_seed())
+    torch.manual_seed(seed)
+    np.random.seed(seed)
 
     # --- dataset setup
     training_config = TrainingConfig(TRAINING_CONFIG)
@@ -46,9 +43,7 @@ for _ in range(1):
     metrics: MetricList = MetricList()
 
     pos_weight = compute_pos_weight(train_loader.dataset)
-    pos_weight_test = compute_pos_weight(test_loader.dataset)
     criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-    criterion_test = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight_test)
 
     for epoch in range(training_config.get_max_epoch()):
         model.train()
@@ -56,7 +51,6 @@ for _ in range(1):
         for batch in train_loader:
             optimizer.zero_grad()
             out = model(batch)
-            # loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
             loss = criterion(out, batch.y.float())
             loss.backward()
             optimizer.step()
@@ -69,8 +63,7 @@ for _ in range(1):
         with torch.no_grad():
             for batch in test_loader:
                 out = model(batch)
-                # loss = torch.nn.functional.mse_loss(torch.sigmoid(out), batch.y)
-                loss = criterion_test(out, batch.y.float())
+                loss = criterion(out, batch.y.float())
                 total_test_loss += loss.item()
 
         metrics.append(evaluate(model, test_loader))
@@ -85,12 +78,3 @@ for _ in range(1):
     # --- Evaluation ---------------------------------------------------------------------------------------------------
 
     plot_evaluations(converger.train_losses, converger.test_losses, metrics)
-    plt.figure(figsize=(10,6))
-    plt.plot(range(1, len(converger.train_losses)+1), converger.train_losses, label='Train Loss')
-    plt.plot(range(1, len(converger.train_losses)+1), converger.test_losses, label='Test Loss')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.legend()
-
-    plt.savefig(f"{datetime.now()}.png", dpi=300, bbox_inches='tight')
-    #plt.show()
