@@ -15,36 +15,78 @@ class SimpleEdgeClassifier(torch.nn.Module):
         hidden_dim      = config.get_hidden_dim()
         num_layers      = config.get_num_layers()
 
-        # simple gcn layers
+        # simple gcn layers and batchnorm
         self.convs = torch.nn.ModuleList()
+        self.bns = torch.nn.ModuleList()
         self.convs.append(GCNConv(node_features, hidden_dim))
+        self.bns.append(torch.nn.BatchNorm1d(hidden_dim))
 
         for _ in range(num_layers - 1):
             self.convs.append(GCNConv(hidden_dim, hidden_dim))
+            self.bns.append(torch.nn.BatchNorm1d(hidden_dim))# * HEADS))
 
         # edge prediction
         self.edge_predictor = torch.nn.Sequential(
-            torch.nn.Linear(hidden_dim * 2, hidden_dim),
+            torch.nn.Linear(139, 128),
+            torch.nn.BatchNorm1d(128),
             torch.nn.ReLU(),
-            torch.nn.Dropout(0.1),
-            torch.nn.Linear(hidden_dim, 1),
+            torch.nn.Dropout(0.2),
+            torch.nn.Linear(128, 64),
+            torch.nn.ReLU(),
+            torch.nn.Linear(64, 1)
         )
+
+    def geometric_features(selfself, raw_x, src, dst):
+        r_s     = raw_x[src, 0]; r_d    = raw_x[dst, 0]
+        cos_s   = raw_x[src, 1]; sin_s  = raw_x[src, 2]
+        cos_d   = raw_x[dst, 1]; sin_d  = raw_x[dst, 2]
+        z_s     = raw_x[src, 3]; z_d    = raw_x[dst, 3]
+
+        dr = r_d - r_s
+        dz = z_d - z_s
+
+        dphi = torch.atan2(sin_d * cos_s - cos_d * sin_s,
+                           cos_d * cos_s - sin_d * sin_s)
+
+        eps = 1e-4
+        dphi_dz = dphi / dz.abs().clamp(min=eps)
+        dr_dz = dr / dz.abs().clamp(min=eps)
+
+        features = torch.stack([
+            dr,
+            dz,
+            dphi,
+            dphi.cos(),
+            dphi.sin(),
+            dphi_dz,
+            dr_dz,
+            r_s,
+            r_d,
+            z_s,
+            z_d,
+            (dr ** 2 + dz ** 2).sqrt()
+        ], dim=1)
+
+        return features
 
     def forward(self, data):
         x, edge_index = data.x, data.edge_index
 
-        for conv in self.convs:
+        raw_x = data.x
+
+        for i, (conv, bns) in enumerate(zip(self.convs, self.bns)):
             x = conv(x, edge_index)
-            x = F.relu(x)
+            if i < len(self.convs) - 1:
+                x = bns(F.relu(x))
+            else:
+                x = F.relu(x)
 
         # get embeddings for source and destination
         src, dst = edge_index
-        edge_features = torch.cat([
-            x[src] + x[dst],
-            (x[src] - x[dst]).abs()
-        ], dim=1)
+
+        features = self.geometric_features(raw_x, src, dst)
+        features = torch.cat([x[src], x[dst], features], dim=1)
 
         # predict edge score
-        edge_scores = self.edge_predictor(edge_features).squeeze(-1)
-
+        edge_scores = self.edge_predictor(features).squeeze(-1)
         return edge_scores
