@@ -1,6 +1,7 @@
+"""
+Module containing a configuration class for the training parameters.
+"""
 from configs.config import Config
-
-from typing import List
 
 class TrainingConfig(Config):
     """
@@ -8,8 +9,6 @@ class TrainingConfig(Config):
 
     Handles dataset splitting, batch size, learning rate, and training duration settings.
     """
-    def __init__(self, config_path: str):
-        super().__init__(config_path)
 
     def get_training_split(self) -> float:
         """

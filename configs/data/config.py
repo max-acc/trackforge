@@ -1,13 +1,15 @@
-from configs.config import Config
+"""
+Module containing a configuration class for the synthetic data generation process.
+"""
 
 from typing import Dict, Any
+
+from configs.config import Config
 
 class SyntheticDataConfig(Config):
     """
     Configuration for synthetic data generation in particle track reconstruction.
     """
-    def __init__(self, config_path: str):
-        super().__init__(config_path)
 
     def get_num_events(self) -> int:
         """
@@ -55,4 +57,3 @@ class SyntheticDataConfig(Config):
             'z_positions':      self.config['detector']['z_positions'],
             'disk_r_range':     self.config['detector']['disk_r_range'],
         }
-
