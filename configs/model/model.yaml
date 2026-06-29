@@ -3,14 +3,20 @@
 # ----------------------------------------------------------------------------------------------------------------------
 
 model:
-  graph_net: "SimpleGCN"
+  graph_net: "SimpleGAT"
   classifier: "SimpleEdgeClassifier"
 
 simple_gcn:
   node_features:      4
   latent_features:    12
   hidden_dim:         64
+
+simple_gat:
+  node_features:      4
+  num_heads:          4
+  latent_features:    12
   num_layers:         20
+  hidden_dim:         64
 
 simple_edge_classifier:
   hidden_dims:        [128, 64]

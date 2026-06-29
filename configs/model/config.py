@@ -20,7 +20,15 @@ class ModelConfig(Config):
                     'node_features':    int(self.config['simple_gcn']['node_features']),
                     'latent_features':  int(self.config['simple_gcn']['latent_features']),
                     'hidden_dim':       int(self.config['simple_gcn']['hidden_dim']),
-                    'num_layers':       int(self.config['simple_gcn']['num_layers']),
+                }
+            case "SimpleGAT":
+                return {
+                    'name':             self.config['model']['graph_net'],
+                    'node_features':    int(self.config['simple_gat']['node_features']),
+                    'num_heads':        int(self.config['simple_gat']['num_heads']),
+                    'latent_features':  int(self.config['simple_gat']['latent_features']),
+                    'num_layers':       int(self.config['simple_gat']['num_layers']),
+                    'hidden_dim':       int(self.config['simple_gat']['hidden_dim']),
                 }
             case _:
                 raise NotImplementedError("Graph Neural Network model not implemented!")
