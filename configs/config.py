@@ -1,3 +1,6 @@
+"""
+Module containing the base class for configuration data.
+"""
 import yaml
 
 class Config:
@@ -13,7 +16,7 @@ class Config:
 
         :param config_path: Path to configuration file.
         """
-        with open(config_path, 'r') as f:
+        with open(config_path, 'r', encoding="utf-8") as f:
             self.config = yaml.safe_load(f)
 
     def get_config_name(self) -> str:
@@ -31,8 +34,6 @@ class BaseConfig(Config):
 
     Provides access to project metadata and global parameters.
     """
-    def __init__(self, config_path: str):
-        super().__init__(config_path)
 
     def get_project_name(self) -> str:
         """

@@ -1,3 +1,6 @@
+"""
+Module containing a configuration class for the model parameters.
+"""
 from configs.config import Config
 
 class ModelConfig(Config):
@@ -6,13 +9,21 @@ class ModelConfig(Config):
 
     Contains hyperparameters defining the architecture of the GNN model.
     """
-    def __init__(self, config_path: str):
-        super().__init__(config_path)
 
     def get_graph_net_name(self) -> str:
+        """
+        Returns the name of the graph neural network model.
+
+        :return:    The name of the graph neural network model.
+        """
         return str(self.config['model']['graph_net'])
 
     def get_graph_net(self):
+        """
+        Returns the graph neural network model's parameters.
+
+        :return:    Return a dictionary containing the parameters of the specified graph neural network model.
+        """
         match self.config['model']['graph_net']:
             case "SimpleGCN":
                 return {
@@ -35,6 +46,11 @@ class ModelConfig(Config):
 
 
     def get_classifer_net(self):
+        """
+        Returns the classifier model's parameters.
+
+        :return:    Return a dictionary containing the parameters of the specified classifier network model.
+        """
         match self.config['model']['classifier']:
             case "SimpleEdgeClassifier":
                 return {
