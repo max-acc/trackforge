@@ -9,26 +9,30 @@ class ModelConfig(Config):
     def __init__(self, config_path: str):
         super().__init__(config_path)
 
-    def get_node_features(self) -> int:
-        """
-        Return the number of input features per node (hit).
+    def get_graph_net_name(self) -> str:
+        return str(self.config['model']['graph_net'])
 
-        :return:
-        """
-        return int(self.config['model']['node_features'])
+    def get_graph_net(self):
+        match self.config['model']['graph_net']:
+            case "SimpleGCN":
+                return {
+                    'name':             self.config['model']['graph_net'],
+                    'node_features':    int(self.config['simple_gcn']['node_features']),
+                    'latent_features':  int(self.config['simple_gcn']['latent_features']),
+                    'hidden_dim':       int(self.config['simple_gcn']['hidden_dim']),
+                    'num_layers':       int(self.config['simple_gcn']['num_layers']),
+                }
+            case _:
+                raise NotImplementedError("Graph Neural Network model not implemented!")
 
-    def get_hidden_dim(self) -> int:
-        """
-        Return the hidden dimension size of the GNN layers.
 
-        :return:
-        """
-        return int(self.config['model']['hidden_dim'])
-
-    def get_num_layers(self) -> int:
-        """
-        Return the number of message-passing layers in the GNN.
-
-        :return:
-        """
-        return int(self.config['model']['num_layers'])
+    def get_classifer_net(self):
+        match self.config['model']['classifier']:
+            case "SimpleEdgeClassifier":
+                return {
+                    'name':         self.config['model']['classifier'],
+                    'hidden_dims':  self.config['simple_edge_classifier']['hidden_dims'],
+                    'dropout':      int(self.config['simple_edge_classifier']['dropout'])
+                }
+            case _:
+                raise NotImplementedError("Edge Classifier model not implemented!")

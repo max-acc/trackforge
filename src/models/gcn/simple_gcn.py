@@ -2,18 +2,21 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 
-from configs.model import config
 from configs.model.config import ModelConfig
+from src.models.model_classifier_selection import get_edge_classifier
 
 
-class SimpleEdgeClassifier(torch.nn.Module):
+class SimpleGCN(torch.nn.Module):
     def __init__(self, config_path):
         super().__init__()
 
         config = ModelConfig(config_path)
-        node_features   = config.get_node_features()
-        hidden_dim      = config.get_hidden_dim()
-        num_layers      = config.get_num_layers()
+        graph_net = config.get_graph_net()
+        classifier_net = config.get_classifer_net()
+        node_features   = graph_net['node_features']
+        latent_features = graph_net['latent_features']
+        hidden_dim      = graph_net['hidden_dim']
+        num_layers      = graph_net['num_layers']
 
         # simple gcn layers and batchnorm
         self.convs = torch.nn.ModuleList()
@@ -23,20 +26,12 @@ class SimpleEdgeClassifier(torch.nn.Module):
 
         for _ in range(num_layers - 1):
             self.convs.append(GCNConv(hidden_dim, hidden_dim))
-            self.bns.append(torch.nn.BatchNorm1d(hidden_dim))# * HEADS))
+            self.bns.append(torch.nn.BatchNorm1d(hidden_dim))
 
         # edge prediction
-        self.edge_predictor = torch.nn.Sequential(
-            torch.nn.Linear(139, 128),
-            torch.nn.BatchNorm1d(128),
-            torch.nn.ReLU(),
-            torch.nn.Dropout(0.2),
-            torch.nn.Linear(128, 64),
-            torch.nn.ReLU(),
-            torch.nn.Linear(64, 1)
-        )
+        self.edge_predictor = get_edge_classifier(classifier_net, hidden_dim * 2 + latent_features)
 
-    def geometric_features(selfself, raw_x, src, dst):
+    def geometric_features(self, raw_x, src, dst):
         r_s     = raw_x[src, 0]; r_d    = raw_x[dst, 0]
         cos_s   = raw_x[src, 1]; sin_s  = raw_x[src, 2]
         cos_d   = raw_x[dst, 1]; sin_d  = raw_x[dst, 2]

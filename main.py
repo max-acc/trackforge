@@ -5,7 +5,7 @@ from src.data.dataloader import get_dataloaders, compute_pos_weight
 from src.evaluation.metric_dc import MetricList
 from src.evaluation.metrics import evaluate
 from src.evaluation.plots import plot_evaluations
-from src.models.simple_edge_classifier import SimpleEdgeClassifier as EdgeClassifier
+from src.models.model_selection import get_model
 from src.training.converger import get_converger
 from configs.config import BaseConfig
 from configs.training.config import TrainingConfig
@@ -13,7 +13,7 @@ from configs.training.config import TrainingConfig
 # --- Configs ----------------------------------------------------------------------------------------------------------
 BASE_CONFIG     = "configs/default.yaml"
 TRAINING_CONFIG = "configs/training/training.yaml"
-MODEL_CONFIG    = "configs/model/simple_gnn.yaml"
+MODEL_CONFIG    = "configs/model/model.yaml"
 
 # --- Setup-------------------------------------------------------------------------------------------------------------
 #
@@ -33,7 +33,7 @@ for _ in range(1):
     train_loader, _, test_loader = get_dataloaders(TRAINING_CONFIG, seed)
 
     # --- model setup
-    model           = EdgeClassifier(MODEL_CONFIG)
+    model           = get_model(MODEL_CONFIG)
     optimizer       = torch.optim.Adam(model.parameters(), training_config.get_learning_rate())
     scheduler       = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
     converger       = get_converger(training_config.get_converger(), training_config.get_min_epoch())

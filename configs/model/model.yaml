@@ -2,11 +2,17 @@
 # Configuration data the simple edge classifier model.
 # ----------------------------------------------------------------------------------------------------------------------
 
-default:
-  name: "SimpleEdgeClassifier"
-
 model:
-  node_features:  4
-  hidden_dim:     64
-  num_layers:     20
+  graph_net: "SimpleGCN"
+  classifier: "SimpleEdgeClassifier"
+
+simple_gcn:
+  node_features:      4
+  latent_features:    12
+  hidden_dim:         64
+  num_layers:         20
+
+simple_edge_classifier:
+  hidden_dims:        [128, 64]
+  dropout:            0.2
   
