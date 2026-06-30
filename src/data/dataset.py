@@ -8,7 +8,7 @@ from torch_geometric.data import InMemoryDataset, Data
 from torch_geometric.utils import to_undirected
 from tqdm import tqdm
 
-from synthetic import create_synthetic_event
+from .synthetic import create_synthetic_event
 from configs.data.config import SyntheticDataConfig
 
 class SyntheticDataset(InMemoryDataset):

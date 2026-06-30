@@ -9,6 +9,7 @@ model:
 simple_gcn:
   node_features:      4
   latent_features:    12
+  num_layers:         5
   hidden_dim:         64
 
 simple_gat:
