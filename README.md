@@ -2,29 +2,60 @@
 
 > Particle Tracks Reconstruction via Graph Neural Networks
 
+_TrackForge_ is a from scratch **Graph Neural Network (GNN) pipeline** for reconstructing particle tracks in high energy 
+physics (HEP) detectors. Hits become nodes, candidate connections become edges, and the model learns to classify which
+pairs belong to teh same helical trajectory.
 
-_TrackForge_ is an implementation of a **Graph Neural Network (GNN) pipeline for particle track reconstrution**.
+Built by a CS major with a Physics minor, this project sits at the intersection of machine learning and particle 
+physics. The goal is not to beat state of the art systems but to deeply understand every component, while documenting
+the journey (including dead ends).
 
-This project is being developed at the intersection of CS and Physics, reflecting my personal background as a CS major with a Physics minor. The central objective is to build a working system that is fully understood from first priciple. Accordingly, the documentation covers not only the technical decisions made, but also the reasoning behind them and, where applicable, the dead ends encountered along the way.
-
-The project is also intended to be accessible to readers with a similar background for whom existing literature on track reconstruction may be difficult to enter.
+It is designed to be accessible for others with similar backgrounds who find HEP intersting, and want to start out.
 
 ---
+
 ### Objectives
-**Technical:** Design and implement a GNN baed pipeline, capable for performing hit paring on synthethic data. Each component of the pipeline _(data generation, graph construction, model architecture, evaluation)_ should be understood in full by myself (and the attentive reader).
 
-**Academic:** Deepen my understanding in both GNNs and the relevant Particle Physics.
+| Academic                          | Technical                            | Softwareengineering                      |
+|-----------------------------------|--------------------------------------|------------------------------------------|
+| Deepen GNN understanding          | GNN + PyG pipeline on synthetic data | Improve Python Proficiency               |
+| Deepen particle physics intuition | Hit pairing / edge classification    | Modular design for easy experimentation  |
+|                                   |                                      | Explore CUDA / performance-critical code |
 
-**Engineering:** Improve practical Python proficiency through work on this codebase, with a long term goal of integrating performance critical C++ components.
 
 ### Scope and Limitations
-This project does not aim to reproduce or compete with existing state of the art (SoTA) systes for track reconstruction. I am aware that there is a lot of research in this field, however I did not spend too much time looking into it, as I wanted to come up with my own solutions and problems.
+This is **not** an attempt to compete with production track reconstruction systems (e.g., those used at LHC 
+experiments). I deliberately avoided deep literature dives early on to develop my own intuition and solutions first.
 
-I do not have formal qualifications in physics (yet). Where assumptions are made, the reasoning is stated.
+I do not have formal physics qualifications (yet). Assumptions are clearly stated with reasoning. Performance is modest,
+but learning is massive.
 
 ### Repository Structure
-Each section of this project is documented in its own README, linked below. The entries here profide a breif orientation; the linked pages contain the full discussion.
+
+- **[Problem & Modeling](/docs/01_introduction.md)**
+- **[Synthetic Data Generation](/docs/02_synthetic_data_generation.md)**
+- **[Models](/docs/04_models.md)**
+- **[Training](/docs/05_training.md)**
+- **[Evaluation & Lessons Learned](/docs/06_evaluation.md)**
 
 ---
-## Structure
 
+### Current Models
+
+**Graph Encoders**
+* Simple GCN
+* Simple GAT
+
+**Graph Attention**
+* Simple MLP
+
+Everything is configurable via `YAML` files for rapid eexperimentation.
+
+## Run it Yourself
+
+After cloning and `cd`-ing, you can just run `make run` to generate a synthetic dataset and start the model training
+and evaluation.
+
+Note that the generated dataset will be used for further runs. You can delete it with `make clear-synthetic`. 
+Regarding the dependecies, just try to run the model with small config parameters, and install what you are being
+expected to.
