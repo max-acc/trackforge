@@ -36,7 +36,7 @@ but learning is massive.
 - **[Synthetic Data Generation](/docs/02_synthetic_data_generation.md)**
 - **[Models](/docs/04_models.md)**
 - **[Training](/docs/05_training.md)**
-- **[Evaluation & Lessons Learned](/docs/06_evaluation.md)**
+- **[Evaluation](/docs/06_evaluation.md)**
 
 ---
 
