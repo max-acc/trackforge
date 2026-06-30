@@ -1,3 +1,7 @@
+"""
+Module implementing a simple Graph Convolutional Network based classifier.
+"""
+
 import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
@@ -7,6 +11,15 @@ from src.models.model_classifier_selection import get_edge_classifier
 
 
 class SimpleGCN(torch.nn.Module):
+    """
+    Graph Convolutional Network based classifier.
+
+    Components:
+        * Graph Convolutional Layers
+        * Batch Normalization
+        * Edge Classifier (specified in config)
+    """
+
     def __init__(self, config_path):
         super().__init__()
 
@@ -31,11 +44,24 @@ class SimpleGCN(torch.nn.Module):
         # edge prediction
         self.edge_predictor = get_edge_classifier(classifier_net, hidden_dim * 2 + latent_features)
 
-    def geometric_features(self, raw_x, src, dst):
-        r_s     = raw_x[src, 0]; r_d    = raw_x[dst, 0]
-        cos_s   = raw_x[src, 1]; sin_s  = raw_x[src, 2]
-        cos_d   = raw_x[dst, 1]; sin_d  = raw_x[dst, 2]
-        z_s     = raw_x[src, 3]; z_d    = raw_x[dst, 3]
+    def geometric_features(self, raw_x, src, dst) -> torch.Tensor:
+        """
+        Construct geometric features from source and destination nodes.
+
+        :param raw_x:   The raw data.
+        :param src:     The source nodes.
+        :param dst:     The destination nodes.
+        :return:    A tensor of features.
+        """
+
+        r_s     = raw_x[src, 0]
+        r_d     = raw_x[dst, 0]
+        cos_s   = raw_x[src, 1]
+        sin_s   = raw_x[src, 2]
+        cos_d   = raw_x[dst, 1]
+        sin_d   = raw_x[dst, 2]
+        z_s     = raw_x[src, 3]
+        z_d     = raw_x[dst, 3]
 
         dr = r_d - r_s
         dz = z_d - z_s
