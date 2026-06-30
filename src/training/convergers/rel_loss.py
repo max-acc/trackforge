@@ -1,3 +1,7 @@
+"""
+Module for implementing a Relative Deviation based Converger.
+"""
+
 from src.training.converger import Converger
 
 

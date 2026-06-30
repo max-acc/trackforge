@@ -1,3 +1,7 @@
+"""
+Module for implementing a Simple Moving Average based Converger.
+"""
+
 from src.training.converger import Converger
 
 class SimpleMovingAverageConverger(Converger):
@@ -26,9 +30,9 @@ class SimpleMovingAverageConverger(Converger):
 
         :return:    The SMA value.
         """
-        len = min(len(self.train_losses), self.window_size)
+        win_length = min(len(self.train_losses), self.window_size)
         cumsum = 0
-        for i in range(len):
+        for i in range(win_length):
             cumsum += self.train_losses[-(i+1)]
 
-        return cumsum / len
+        return cumsum / win_length

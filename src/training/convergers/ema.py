@@ -1,4 +1,9 @@
+"""
+Module for implementing a Exponential Moving Average based Converger.
+"""
+
 from src.training.converger import Converger
+
 
 class ExponentialMovingAverageConverger(Converger):
     """
