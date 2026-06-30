@@ -30,6 +30,7 @@ class ModelConfig(Config):
                     'name':             self.config['model']['graph_net'],
                     'node_features':    int(self.config['simple_gcn']['node_features']),
                     'latent_features':  int(self.config['simple_gcn']['latent_features']),
+                    'num_layers':       int(self.config['simple_gcn']['num_layers']),
                     'hidden_dim':       int(self.config['simple_gcn']['hidden_dim']),
                 }
             case "SimpleGAT":
