@@ -1,9 +1,22 @@
+"""
+Module for evaluating a model on a dataset.
+"""
+
 import torch
 
 from src.evaluation.metric_dc import Metric
 
 
 def evaluate(model, loader, threshold=0.7) -> Metric:
+    """
+    Evaluate a model on a dataset.
+
+    :param model:       The module to evaluate.
+    :param loader:      The dataloader containing the dataset to evaluate.
+    :param threshold:   The threshold to determine if a prediction should be made.
+    :return:    A Metric containing the evaluation metrics.
+    """
+
     model.eval()
     all_scores, all_labels = [], []
 

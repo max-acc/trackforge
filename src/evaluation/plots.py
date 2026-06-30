@@ -1,14 +1,23 @@
-from datetime import datetime
-from typing import List
+"""
+Module for plotting training evaluations.
+"""
 
+from datetime import datetime
 import matplotlib.pyplot as plt
 
 from src.evaluation.metric_dc import MetricList
 
 
-def plot_evaluations(train_losses: List[float],
-                     test_losses: List[float],
-                     metrics: MetricList):
+def plot_evaluations(train_losses: list[float],
+                     test_losses: list[float],
+                     metrics: MetricList) -> None:
+    """
+    Plots evaluations for the model training.
+
+    :param train_losses:    A list containg the training losses.
+    :param test_losses:     A list containg the testing losses.
+    :param metrics:         A `MetricList` containg the metrics of the training
+    """
     file_name = f'{datetime.now()}_'
 
     # --- plot accuracy, recall and precision
