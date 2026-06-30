@@ -1,13 +1,21 @@
+"""
+Module specifying and generating a synthetic dataset.
+"""
+
 import torch
 import numpy as np
 from torch_geometric.data import InMemoryDataset, Data
 from torch_geometric.utils import to_undirected
 from tqdm import tqdm
 
-from .synthetic import create_synthetic_event
+from synthetic import create_synthetic_event
 from configs.data.config import SyntheticDataConfig
 
 class SyntheticDataset(InMemoryDataset):
+    """
+    Dataset modeling synthetic data.
+    """
+
     def __init__(self, root, config_path="./configs/data/synthetic.yaml", transform=None, pre_transform=None):
         self.config = SyntheticDataConfig(config_path)
         super().__init__(root, transform, pre_transform)
@@ -54,6 +62,14 @@ class SyntheticDataset(InMemoryDataset):
         torch.save((data, slices), self.processed_paths[0])
 
     def build_graph(self, hits, phi_threshold=1):
+        """
+        Construct a graph based on hit data.
+
+        :param hits:            The hits to construct the graph of.
+        :param phi_threshold:   The phi threshold to use to construct the graph.
+        :return:    The undirected hit graph.
+        """
+
         cos_phi = hits[:, 1]
         sin_phi = hits[:, 2]
         z = hits[:, 3]
@@ -95,6 +111,15 @@ class SyntheticDataset(InMemoryDataset):
         return to_undirected(edge_index)
 
     def get_edge_labels(self, edge_index, track_ids):
+        """
+        Labels edges based on the ground truth, e.g. edges connecting nodes with the same track id belong are true
+        edges.
+
+        :param edge_index:  The edge indices.
+        :param track_ids:   The track IDs.
+        :return:    The edge labels for each edge.
+        """
+
         src, dst = edge_index
 
         if isinstance(track_ids, np.ndarray):

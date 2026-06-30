@@ -1,9 +1,14 @@
-from configs.training.config import TrainingConfig
-from src.data.dataset import SyntheticDataset
+"""
+Module implemeting dataloader generation.
+"""
 
 import torch
 from torch.utils.data import random_split
 from torch_geometric.loader import DataLoader
+
+from configs.training.config import TrainingConfig
+from src.data.dataset import SyntheticDataset
+
 
 def get_dataloaders(config_path, seed, root="src/data/synthetic"):
     """
