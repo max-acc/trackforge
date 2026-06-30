@@ -1,3 +1,7 @@
+"""
+Main entry point into project containg config definitions, data generation, model training and evaluation.
+"""
+
 import torch
 import numpy as np
 
@@ -38,7 +42,7 @@ for _ in range(1):
     scheduler       = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=10, factor=0.5)
     converger       = get_converger(training_config.get_converger(), training_config.get_min_epoch())
 
-    # --- Training ---------------------------------------------------------------------------------------------------------
+    # --- Training -----------------------------------------------------------------------------------------------------
     train_losses = []
     test_losses = []
     metrics: MetricList = MetricList()
@@ -73,7 +77,8 @@ for _ in range(1):
 
         scheduler.step(total_test_loss / len(test_loader))
 
-        print(f'Epoch {epoch + 1}, Train Loss: {converger.train_losses[-1]:.4f}, Test Loss: {converger.test_losses[-1]:.4f}')
+        print(f'Epoch {epoch + 1}, Train Loss: {converger.train_losses[-1]:.4f}, '
+              f'Test Loss: {converger.test_losses[-1]:.4f}')
 
         if converger.has_converged(epoch):
             break
