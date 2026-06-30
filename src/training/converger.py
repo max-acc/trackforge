@@ -1,4 +1,6 @@
-from typing import List
+"""
+Module containg a base class for specifying a converger, and a selection method given a configuration.
+"""
 
 class Converger():
     """
@@ -6,8 +8,8 @@ class Converger():
     conditions.
     """
     def __init__(self, min_epoch):
-        self.train_losses: List[float] = []
-        self.test_losses: List[float] = []
+        self.train_losses: list[float] = []
+        self.test_losses: list[float] = []
         self.min_epoch = min_epoch
 
     def append_train_loss(self, loss: float):
@@ -39,6 +41,7 @@ class Converger():
 from src.training.convergers.rel_loss import RelativeLossConverger
 from src.training.convergers.sma import SimpleMovingAverageConverger
 from src.training.convergers.ema import ExponentialMovingAverageConverger
+
 
 def get_converger(converger_name: str, min_epoch=0) -> Converger:
     """
